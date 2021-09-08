@@ -1,39 +1,57 @@
 #!/usr/bin/python3
+"""
+.SYNOPSIS
+    Request SenHub API
+.DESCRIPTION
+    This sensor use the built in python libraries
+    Output: 0 Service OK
+            2 Critical
+            3 Unknown
+.PARAMETER 
+    URL : SenHub URL between ''
+​
+.NOTES       
+    1.0
+		First version
+        support@senhub.io
+        13/08/2021
+        Alexis
+"""
 ​
 from urllib import request
 import sys
-import json
 ​
-url = 'https://api.demo.sensorfactory.io/sensors/instances/a805eb0f-5aec-4864-a8c0-c30e0d47d60a/metrics?token=bda47654-4167-4cc1-9f9e-779c8dd17379'
 def http_request(url):
-    perf = str(' |')
-    sta = str('OK:')
-​
     try:
         # Try to reach the endpoint given by the url
         result = (request.urlopen(url)).read()
-    except:
+        result = result.decode('utf-8')
+    except Exception as e:
         # If something is wrong return an error message
-        print('error')
+        print(e)
         sys.exit(3) 
     else:
-        # if everithing work fine return the content of the endpoint 
-        result = result.decode('utf-8')
-        result = json.loads(result)
-        for i in result['metrics']:
-            if isinstance((i['value']),int) or isinstance((i['value']),float):
-                sta = sta +' '+i['channel']+'('+str(i['value'])+'),'
-                perf = perf +" '"+i['channel']+"'="+str(i['value'])+","
-            else:
-                sta = sta +' '+i['channel']+'('+str(i['value'])+'),'
-                perf = perf
-        print(sta[:-1]+perf[:-1])
-        sys.exit(0)  
+        # if everithing work fine check the status of the return string 
+        if result[0:2] == 'OK':
+            print(result)
+            sys.exit(0)  
 ​
+        elif result[0:2] == 'KO':
+            print(result)
+            sys.exit(2)
 ​
+        else:
+            print(result)
+            sys.exit(3)
 ​
-http_request(url)
-
-
-
-
+        
+try:
+    http_request(sys.argv[1])
+except IndexError:
+    # If no url is given return an error
+        print('Wrong or no parameter')
+        sys.exit(3)
+except Exception as e:
+        # If something is wrong return an error message
+        print(e)
+        sys.exit(3) 
