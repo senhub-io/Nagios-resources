@@ -11,10 +11,10 @@
     URL : SenHub URL between ''
 ​
 .NOTES       
-    1.0
+    1.1
 		First version
-        support@senhub.io
-        13/08/2021
+        support@sensorfactory.eu
+        29/09/2021
         Alexis
 """
 ​
@@ -32,14 +32,21 @@ def http_request(url):
         sys.exit(3) 
     else:
         # if everithing work fine check the status of the return string 
-        if result[0:2] == 'OK':
+        if result[:2] == 'OK':
             print(result)
             sys.exit(0)  
 ​
-        elif result[0:2] == 'KO':
+        elif result[:2] == 'KO' or result[:8] == 'CRITICAL':
             print(result)
             sys.exit(2)
 ​
+        elif result[:7] == 'UNKNOWN':
+            print(result)
+            sys.exit(3)      
+​
+        elif result[:7] == 'WARNING':
+            print(result)
+            sys.exit(1) 
         else:
             print(result)
             sys.exit(3)
@@ -50,8 +57,15 @@ try:
 except IndexError:
     # If no url is given return an error
         print('Wrong or no parameter')
-        sys.exit(3)
+        sys.exit(2)
 except Exception as e:
         # If something is wrong return an error message
         print(e)
-        sys.exit(3) 
+        sys.exit(2) 
+Réduire
+
+
+
+
+Lire les clips vidéo
+
